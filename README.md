@@ -10,8 +10,6 @@ git clone https://github.com/cmariot/total_perspective_vortex.git
 cd total_perspective_vortex
 ```
 
-Download the dataset from [physionet](https://physionet.org/content/eegmmidb/1.0.0/) and extract it in the `dataset` folder.
-
 You need to have [conda](https://docs.conda.io/en/latest/) installed on your system. Then you can create a new conda environment with the following command:
 
 ```bash

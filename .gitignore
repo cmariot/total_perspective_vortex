@@ -1,6 +1,8 @@
 # Subject
 en.subject.pdf
+*.pdf
 
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
