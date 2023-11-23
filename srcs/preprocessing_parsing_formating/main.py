@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/17 15:21:35 by cmariot           #+#    #+#              #
-#    Updated: 2023/11/21 10:07:01 by cmariot          ###   ########.fr        #
+#    Updated: 2023/11/22 17:20:15 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,17 +27,19 @@ def visualize_raw_data():
 
     raw = mne.io.read_raw_edf(
         input_fname,
-        preload=True,
-        verbose=True
+        preload=True
     )
+
+    # channel_types = raw.get_channel_types()
+    # print(f"{channel_types = }")
+    # -> The 64 channels are EEG
+
+    description = raw.describe()
+    print(f"{description = }")
 
     # Print the raw data and its info
     print(raw)
     print(raw.info)
-
-    exit()
-
-    # # Plot the Power Spectral Density (PSD) for each sensor
 
     # # Plot the raw sensor traces
     raw.plot(
