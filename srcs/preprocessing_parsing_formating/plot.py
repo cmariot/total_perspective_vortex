@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/09 13:47:47 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/10 10:18:58 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/10 17:03:02 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,12 @@
 import mne
 
 
-def plot(raw: mne.io.BaseRaw, subject_id: int, recording_id: int):
+def plot(
+    raw: mne.io.BaseRaw,
+    subject_id: int,
+    recording_id: int,
+    is_filtered: bool = False
+):
 
     # Plot the raw sensor traces with the events
     # X-axis: time in seconds
@@ -37,7 +42,11 @@ def plot(raw: mne.io.BaseRaw, subject_id: int, recording_id: int):
         Get the title of the plot
         """
         t0_legend = "T0: rest"
-        title = (
+        if not is_filtered:
+            pre_title = "Raw "
+        else:
+            pre_title = "Filtered "
+        title = pre_title + (
             f"EEG recording - Subject ID: {subject_id} " +
             f"- Recording ID: {recording_id} - {t0_legend}"
         )
@@ -52,6 +61,16 @@ def plot(raw: mne.io.BaseRaw, subject_id: int, recording_id: int):
             title += f" - {t1_legend} - {t2_legend}"
         return title
 
+    # events, event_dict = mne.events_from_annotations(raw, verbose=False)
+    # if len(events) > 1:
+    #     mne.viz.plot_events(
+    #         events=events,
+    #         event_id=event_dict,
+    #         sfreq=raw.info['sfreq'],
+    #         first_samp=raw.first_samp,
+    #         verbose=False,
+    #     )
+
     raw.plot(
         n_channels=10,
         scalings='auto',
@@ -59,6 +78,8 @@ def plot(raw: mne.io.BaseRaw, subject_id: int, recording_id: int):
         show=True,
         block=True,
         verbose=False,
+        bgcolor='black',
+        color='white',
     )
 
     return raw

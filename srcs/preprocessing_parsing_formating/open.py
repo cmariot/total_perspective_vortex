@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:09 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/10 10:19:10 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/10 13:48:19 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,6 +17,7 @@ def get_events_legend(recording_id: int):
     """
     Get the events legend for T1 and T2
     """
+    t0_legend = "T0: rest"
     t1_legend = t2_legend = ""
     if recording_id > 2:
         t1_left_fist = [3, 4, 7, 8, 11, 12]
@@ -26,28 +27,21 @@ def get_events_legend(recording_id: int):
         else:
             t1_legend = "T1: both fists"
             t2_legend = "T2: both feet"
-    return t1_legend, t2_legend
+    return t0_legend, t1_legend, t2_legend
 
 
 def set_annotation(raw: mne.io.BaseRaw, recording_id: int) -> mne.io.BaseRaw:
-    events, event_dict = mne.events_from_annotations(raw, verbose=False)
-    t1_legend, t2_legend = get_events_legend(recording_id)
-    mapping = {
-        1: "T0: rest",
-        2: t1_legend,
-        3: t2_legend,
-    }
-    annot_from_events = mne.annotations_from_events(
-        events=events,
-        event_desc=mapping,
-        sfreq=raw.info["sfreq"],
-        orig_time=raw.info["meas_date"],
-    )
-    raw.set_annotations(annot_from_events)
+    """
+    Set a more explicit name for the events
+    """
+    t0_legend, t1_legend, t2_legend = get_events_legend(recording_id)
+    raw.annotations.rename({"T0": t0_legend})
+    if recording_id > 2:
+        raw.annotations.rename({"T1": t1_legend, "T2": t2_legend})
     return raw
 
 
-def open_raw_data(subject_id: int = 1, recording_id: int = 1) -> mne.io.BaseRaw:
+def open_raw_data(subject_id: int = 1, recording_id: int = 1):
 
     # Load the signal of the EEG recording with the given subject_id and
     # recording_id
@@ -80,7 +74,7 @@ def open_raw_data(subject_id: int = 1, recording_id: int = 1) -> mne.io.BaseRaw:
     # Loading a EEG recording from a .edf file
     # https://mne.tools/stable/generated/mne.io.read_raw_edf.html
 
-    raw = mne.io.read_raw_edf(
+    raw: mne.io.BaseRaw = mne.io.read_raw_edf(
         input_fname,
         preload=True,   # filtering require that the data be copied into RAM
         verbose=False,
