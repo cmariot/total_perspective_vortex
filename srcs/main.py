@@ -6,14 +6,17 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:26 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/10 18:03:15 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/11 10:09:54 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import mne
+import matplotlib.pyplot as plt
+
 from preprocessing_parsing_formating.open import open_raw_data
 from preprocessing_parsing_formating.filter import filter_data
 from preprocessing_parsing_formating.plot import plot
+from preprocessing_parsing_formating.dimensionality_reduction import dimensionality_reduction
 
 
 if __name__ == "__main__":
@@ -39,22 +42,38 @@ if __name__ == "__main__":
 
                 # Apply a filter to the data (remove noise)
                 filtered: mne.io.BaseRaw = filter_data(
-                    raw, low_freq=8.0, high_freq=32.0
+                    raw, low_freq=1.0, high_freq=40.0
                 )
-                # filtered = plot(
-                #     filtered, patient_id, recording_id, is_filtered=True
-                # )
+                filtered = plot(
+                    filtered, patient_id, recording_id, is_filtered=True
+                )
 
                 # Compute the power spectral density (PSD) of the data
-                spectrum = filtered.compute_psd()
+                spectrum: mne.time_frequency.Spectrum = filtered.compute_psd(
+                    method="welch",
+                    # fmin=1,
+                    # fmax=40.0
+                    proj=True
+                )
                 spectrum.plot(
                     average=True,
                     amplitude=False,
-                    dB=False,
-                    show=True
+                    dB=True,
                 )
-                import matplotlib.pyplot as plt
-                plt.show()
+                # plt.show()
+
+                # Number of features = number of electrodes (64)
+
+                # Apply a Dimensionality reduction algorithm
+                # Principal component analysis (PCA) : transform potentially
+                # correlated variables into a smaller set of variables, called
+                # principal components
+
+                # x.shape = (64, 1025)
+
+                x = dimensionality_reduction(
+                    x=spectrum.get_data()
+                )
 
                 raw.close()
                 filtered.close()
