@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/09 13:47:47 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/10 17:03:02 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/17 14:59:01 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -78,8 +78,4 @@ def plot(
         show=True,
         block=True,
         verbose=False,
-        bgcolor='black',
-        color='white',
     )
-
-    return raw

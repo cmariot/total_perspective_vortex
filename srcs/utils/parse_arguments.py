@@ -5,21 +5,22 @@ def parse_arguments():
 
     parser = argparse.ArgumentParser(
         prog='Total Perspective Vortex',
-        # description='What the program does',
-        # epilog='Text at the bottom of help'
+        description='Brain computer interface with machine learning based on ' +
+                    'electroencephalographic data',
+        epilog='Text at the bottom of help'
     )
 
     parser.add_argument(
         '-s', '--subject_id',
         type=int,
-        default=1,
+        default=32,
         help='Subject ID',
     )
 
     parser.add_argument(
         '-r', '--record_id',
         type=int,
-        default=3,
+        default=8,
         help='ID of the recording session',
 
     )
