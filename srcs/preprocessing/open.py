@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:09 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/10 13:48:19 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/17 10:04:17 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,7 @@ def set_annotation(raw: mne.io.BaseRaw, recording_id: int) -> mne.io.BaseRaw:
     return raw
 
 
-def open_raw_data(subject_id: int = 1, recording_id: int = 1):
+def open_subject_record(subject_id: int = 1, recording_id: int = 1):
 
     # Load the signal of the EEG recording with the given subject_id and
     # recording_id

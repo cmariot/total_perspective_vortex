@@ -10,7 +10,7 @@ from mne.datasets import eegbci
 from mne.decoding import CSP
 from mne.io import concatenate_raws
 from mne.time_frequency import Spectrum
-from preprocessing_parsing_formating.open import open_raw_data
+from preprocessing.open import open_subject_record
 
 
 if __name__ == "__main__":
@@ -18,10 +18,10 @@ if __name__ == "__main__":
     # Tutorial :
     # https://mne.tools/dev/auto_examples/decoding/decoding_csp_eeg.html
 
-    subject = 1
+    subject = 3
     runs = [3, 4, 7, 8, 11, 12]
 
-    raw = concatenate_raws([open_raw_data(subject, run) for run in runs])
+    raw = concatenate_raws([open_subject_record(subject, run) for run in runs])
 
     eegbci.standardize(raw)
     montage = make_standard_montage("standard_1005")
