@@ -23,14 +23,14 @@ def preprocessing(
     if display_plot:
         plot(filtered, subject_id, record_id, is_filtered=True)
 
-    # Compute the power spectral density (PSD) of the data
-    spectrum: Spectrum = filtered.compute_psd(
-        method="welch",
-        fmin=0,
-        fmax=80,
-        verbose=False
-    )
     if display_plot:
+        # Compute the power spectral density (PSD) of the data
+        spectrum: Spectrum = filtered.compute_psd(
+            method="welch",
+            fmin=0,
+            fmax=80,
+            verbose=False
+        )
         spectrum.plot(
             average=True,
             amplitude=False,

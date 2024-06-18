@@ -6,12 +6,13 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/09 13:47:47 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/17 20:31:42 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/18 12:04:43 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 
 from mne.io import BaseRaw
+import matplotlib.pyplot as plt
 
 
 def plot(
@@ -60,6 +61,7 @@ def plot(
             title += f" - {t1_legend} - {t2_legend}"
         return title
 
+    print(get_plot_title(subject_id, recording_id))
     raw.plot(
         n_channels=10,
         scalings=dict(eeg=10e-5),
@@ -68,3 +70,4 @@ def plot(
         block=True,
         verbose=False
     )
+    plt.show()
