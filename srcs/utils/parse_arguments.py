@@ -20,9 +20,19 @@ def parse_arguments():
     parser.add_argument(
         '-r', '--record_id',
         type=int,
-        default=8,
+        default=3,
         help='ID of the recording session',
 
+    )
+
+    parser.add_argument(
+        type=str,
+        default='train',
+        help='Program mode',
+        action='store',
+        choices=['preprocessing', 'train', 'predict'],
+        metavar='MODE',
+        dest='mode',
     )
 
     args = parser.parse_args()
@@ -36,5 +46,6 @@ def parse_arguments():
 
     return (
         args.subject_id,
-        args.record_id
+        args.record_id,
+        args.mode
     )

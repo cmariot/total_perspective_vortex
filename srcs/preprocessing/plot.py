@@ -6,36 +6,35 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/09 13:47:47 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/17 14:59:01 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/17 20:31:42 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 
-import mne
+from mne.io import BaseRaw
 
 
 def plot(
-    raw: mne.io.BaseRaw,
+    raw: BaseRaw,
     subject_id: int,
     recording_id: int,
     is_filtered: bool = False
 ):
 
-    # Plot the raw sensor traces with the events
-    # X-axis: time in seconds
-    # Y-axis: sensor channels
+    """
+    Plot the raw sensor traces with the events
+    X-axis: time in seconds
+    Y-axis: sensor channels
 
-    # The events are marked as :
-
-    # T0 corresponds to rest
-
-    # T1 corresponds to onset of motion (real or imagined)
-    #   of the left fist (in runs 3, 4, 7, 8, 11, and 12)
-    #   both fists (in runs 5, 6, 9, 10, 13, and 14)
-
-    # T2 corresponds to onset of motion (real or imagined)
-    #   of the right fist (in runs 3, 4, 7, 8, 11, and 12)
-    #   both feet (in runs 5, 6, 9, 10, 13, and 14)
+    The events are marked as :
+    T0 corresponds to rest
+    T1 corresponds to onset of motion (real or imagined)
+      of the left fist (in runs 3, 4, 7, 8, 11, and 12)
+      both fists (in runs 5, 6, 9, 10, 13, and 14)
+    T2 corresponds to onset of motion (real or imagined)
+      of the right fist (in runs 3, 4, 7, 8, 11, and 12)
+      both feet (in runs 5, 6, 9, 10, 13, and 14)
+    """
 
     def get_plot_title(subject_id: int, recording_id: int):
         """
@@ -61,21 +60,11 @@ def plot(
             title += f" - {t1_legend} - {t2_legend}"
         return title
 
-    # events, event_dict = mne.events_from_annotations(raw, verbose=False)
-    # if len(events) > 1:
-    #     mne.viz.plot_events(
-    #         events=events,
-    #         event_id=event_dict,
-    #         sfreq=raw.info['sfreq'],
-    #         first_samp=raw.first_samp,
-    #         verbose=False,
-    #     )
-
     raw.plot(
         n_channels=10,
-        scalings='auto',
+        scalings=dict(eeg=10e-5),
         title=get_plot_title(subject_id, recording_id),
         show=True,
         block=True,
-        verbose=False,
+        verbose=False
     )

@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:09 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/17 14:50:40 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/18 10:23:52 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,7 +48,7 @@ def open_subject_record(subject_id: int = 1, recording_id: int = 1):
     # The format of the EEG recording is .edf (European Data Format)
 
     # Path to the dataset folder
-    dataset_folder = "../dataset/"
+    dataset_folder = "./dataset/"
 
     def subject_id_to_str(subject_id: int):
         """
@@ -80,6 +80,66 @@ def open_subject_record(subject_id: int = 1, recording_id: int = 1):
         verbose=False,
     )
 
+    print(raw.info)
+
     raw = set_annotation(raw, recording_id)
+
+    import matplotlib.pyplot as plt
+
+    # Set montage
+
+    montage = mne.channels.make_standard_montage("standard_1020")
+
+    montage.plot()  # 2D
+    plt.show()
+    # montage.plot(kind="3d", show=True)  # 3D
+    # montage.view_init(azim=70, elev=15)
+    # plt.show()
+
+    # builtin_montages = mne.channels.get_builtin_montages(descriptions=False)
+    # for montage_name in builtin_montages:
+    #     print(f"{montage_name}")
+    #     montage = mne.channels.make_standard_montage(montage_name)
+    #     montage.plot()  # 2D
+    #     plt.show()
+
+    # Format channel names to match montage
+    new_channel_names = {}
+    original_channel_names = raw.info["ch_names"]
+    for channel in original_channel_names:
+        print(channel, end=": ")
+        if channel[-1] == '.':
+            if channel[-2] == '.':
+                new_channel_names[channel] = channel[0:-2].upper()
+            else:
+                new_channel_names[channel] = channel[0:-1].upper()
+        if new_channel_names[channel][-1] == 'Z':
+            new_channel_names[channel] = new_channel_names[channel][0:-1] + 'z'
+        if new_channel_names[channel][0] == 'F' and new_channel_names[channel][1] == 'P':
+            channel_end = new_channel_names[channel][-1]
+            new_channel_names[channel] = "Fp" + channel_end
+        print(new_channel_names[channel])
+
+    raw.rename_channels(
+        new_channel_names
+    )
+
+    raw.set_montage(
+        montage, match_alias=True, match_case=True
+    )
+
+    fig = mne.viz.plot_alignment(
+        raw.info,
+        dig=False,
+        eeg=False,
+        surfaces=[],
+        meg=["helmet", "sensors"],
+        coord_frame="meg",
+    )
+    mne.viz.set_3d_view(fig, azimuth=50, elevation=90, distance=0.5)
+    plt.show()
+
+
+    exit()
 
     return raw
