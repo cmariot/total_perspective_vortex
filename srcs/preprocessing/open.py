@@ -6,17 +6,18 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:09 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/18 12:20:37 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/19 10:23:49 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import mne
+from mne.io import concatenate_raws
 # import matplotlib.pyplot as plt
 
 
 def get_events_legend(recording_id: int):
     """
-    Get the events legend for T1 and T2
+    Get the events legend for T1 and T2 based on recording_id
     """
     t0_legend = "T0: rest"
     t1_legend = t2_legend = ""
@@ -68,56 +69,35 @@ def open_subject_record(subject_id: int = 1, recording_id: int = 1):
         return f"R{recording_id:02d}"
 
     str_subject_id = subject_id_to_str(subject_id)
-    str_recording_id = recording_id_to_str(recording_id)
-    dataset_file = f"{str_subject_id}/{str_subject_id}{str_recording_id}.edf"
-    input_fname = dataset_folder + dataset_file
 
-    # Loading a EEG recording from a .edf file
-    # https://mne.tools/stable/generated/mne.io.read_raw_edf.html
+    fist_fist = [3, 4, 7, 8, 11, 12, 1, 2]
+    fist_foot = [5, 6, 9, 10, 13, 14, 1, 2]
 
-    raw: mne.io.BaseRaw = mne.io.read_raw_edf(
-        input_fname,
-        preload=True,   # filtering require that the data be copied into RAM
-        verbose=False,
-    )
+    if recording_id in fist_fist:
+        experiment_runs = fist_fist
+    else:
+        experiment_runs = fist_foot
 
-    # print(raw.info)
+    raw_list = []
+    for record in experiment_runs:
+
+        str_recording_id = recording_id_to_str(record)
+        dataset_file = f"{str_subject_id}/{str_subject_id}{str_recording_id}.edf"
+        input_fname = dataset_folder + dataset_file
+
+        # Loading a EEG recording from a .edf file
+        # https://mne.tools/stable/generated/mne.io.read_raw_edf.html
+
+        raw: mne.io.BaseRaw = mne.io.read_raw_edf(
+            input_fname,
+            preload=True,   # filtering require that the data be copied into RAM
+            verbose=False,
+        )
+
+        raw_list.append(raw)
+
+    raw = concatenate_raws(raw_list)
+
     raw = set_annotation(raw, recording_id)
-
-    # # Set montage
-    # montage = mne.channels.make_standard_montage("standard_1020")
-
-    # # Format channel names to match montage
-    # new_channel_names = {}
-    # original_channel_names = raw.info["ch_names"]
-    # for channel in original_channel_names:
-    #     print(channel, end=": ")
-    #     if channel[-1] == '.':
-    #         if channel[-2] == '.':
-    #             new_channel_names[channel] = channel[0:-2].upper()
-    #         else:
-    #             new_channel_names[channel] = channel[0:-1].upper()
-    #     if new_channel_names[channel][-1] == 'Z':
-    #         new_channel_names[channel] = new_channel_names[channel][0:-1] + 'z'
-    #     if (
-    #         new_channel_names[channel][0] == 'F' and
-    #         new_channel_names[channel][1] == 'P'
-    #     ):
-    #         channel_end = new_channel_names[channel][-1]
-    #         new_channel_names[channel] = "Fp" + channel_end
-    #     print(new_channel_names[channel])
-
-    # raw.rename_channels(
-    #     new_channel_names
-    # )
-
-    # raw.set_montage(
-    #     montage, match_alias=True, match_case=True, on_missing="warn"
-    # )
-
-    # montage.plot()  # 2D
-    # plt.show()
-    # montage.plot(kind="3d", show=True)  # 3D
-    # plt.show()
 
     return raw

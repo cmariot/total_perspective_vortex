@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/09 13:47:47 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/18 12:04:43 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/18 18:20:22 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,7 +61,6 @@ def plot(
             title += f" - {t1_legend} - {t2_legend}"
         return title
 
-    print(get_plot_title(subject_id, recording_id))
     raw.plot(
         n_channels=10,
         scalings=dict(eeg=10e-5),

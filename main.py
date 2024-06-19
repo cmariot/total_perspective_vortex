@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:26 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/18 12:02:53 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/18 18:20:44 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,11 +23,6 @@ if __name__ == "__main__":
 
         subject_id, record_id, program_mode = parse_arguments()
         display_plot = True if program_mode == 'preprocessing' else False
-
-        print(f"Subject ID: {subject_id}")
-        print(f"Recording ID: {record_id}")
-        print(f"Program mode: {program_mode}")
-        print(f"Display plot: {display_plot}")
 
         raw: BaseRaw = preprocessing(subject_id, record_id, display_plot)
 
