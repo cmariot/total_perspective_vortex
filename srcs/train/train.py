@@ -19,14 +19,18 @@ def train(raw: BaseRaw):
         events=events,
         event_id=event_id,
         preload=True,
-        verbose=False,
+        verbose=True,
     )
+
+    # epochs.plot(show=True, block=True, events=events, event_id=event_id, scalings=dict(eeg=20e-5))
+    # plt.show()
+    # exit()
 
     x = epochs.get_data(copy=False)
     y = epochs.events[:, -1]
 
     # Cross validation
-    NB_ITERATIONS, TEST_PROPORTION = 10, 0.2
+    NB_ITERATIONS, TEST_PROPORTION = 20, 0.2
     shuffle_split = ShuffleSplit(NB_ITERATIONS, test_size=TEST_PROPORTION)
 
     # Dimensionality reduction algorithm : Common Spatial Patterns (CSP)
@@ -62,19 +66,6 @@ def train(raw: BaseRaw):
     for train_idx, test_idx in shuffle_split.split(x):
 
         x_train, y_train = x[train_idx], y[train_idx]
-
-        print("1")
-        print(x_train[0])
-        print(x[train_idx[0]])
-
-        if any(x_train[0] != x[train_idx[0]]):
-            print("ERROR")
-            exit()
-        print("1")
-        if y_train[0] != y[train_idx[0]]:
-            print("ERROR")
-            exit()
-
         pipe = pipe.fit(x_train, y_train)
         x_test, y_test = x[test_idx], y[test_idx]
         scores.append(pipe.score(x_test, y_test))

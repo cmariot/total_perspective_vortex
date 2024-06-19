@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:09 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/19 10:23:49 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/19 12:14:17 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -70,8 +70,8 @@ def open_subject_record(subject_id: int = 1, recording_id: int = 1):
 
     str_subject_id = subject_id_to_str(subject_id)
 
-    fist_fist = [3, 4, 7, 8, 11, 12, 1, 2]
-    fist_foot = [5, 6, 9, 10, 13, 14, 1, 2]
+    fist_fist = [3, 4, 7, 8, 11, 12]
+    fist_foot = [5, 6, 9, 10, 13, 14]
 
     if recording_id in fist_fist:
         experiment_runs = fist_fist
