@@ -6,13 +6,13 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:09 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/21 10:18:25 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/21 11:56:24 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import mne
 from mne.io import concatenate_raws
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 
 def get_events_legend(recording_id: int):
@@ -100,10 +100,7 @@ def open_subject_record(subject_id: int = 1, recording_id: int = 1):
 
     raw = set_annotation(raw, recording_id)
 
-    import matplotlib.pyplot as plt
-
     # Set montage
-
     montage = mne.channels.make_standard_montage("standard_1020")
 
     montage.plot()  # 2D
@@ -111,13 +108,6 @@ def open_subject_record(subject_id: int = 1, recording_id: int = 1):
     montage.plot(kind="3d", show=True)  # 3D
     # montage.view_init(azim=70, elev=15)
     plt.show()
-
-    # builtin_montages = mne.channels.get_builtin_montages(descriptions=False)
-    # for montage_name in builtin_montages:
-    #     print(f"{montage_name}")
-    #     montage = mne.channels.make_standard_montage(montage_name)
-    #     montage.plot()  # 2D
-    #     plt.show()
 
     # Format channel names to match montage
     new_channel_names = {}

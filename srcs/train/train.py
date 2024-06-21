@@ -6,9 +6,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mne.io import BaseRaw
 from mne import events_from_annotations
-from sklearn.pipeline import Pipeline
-import contextlib
-import io
+from sklearn.pipeline import make_pipeline
+# from sklearn.pipeline import Pipeline
+# import contextlib
+# import io
 
 
 def train(raw: BaseRaw):
@@ -29,6 +30,8 @@ def train(raw: BaseRaw):
         event_repeated='merge',
     )
 
+    print(epochs.to_data_frame().head())
+
     # with contextlib.redirect_stdout(io.StringIO()):
     #     epochs.plot(
     #         show=True, block=True, events=True, event_id=event_id,
@@ -43,58 +46,64 @@ def train(raw: BaseRaw):
     NB_ITERATIONS, TEST_PROPORTION = 5, 0.2
     shuffle_split = ShuffleSplit(NB_ITERATIONS, test_size=TEST_PROPORTION)
 
-    # Dimensionality reduction algorithm : Common Spatial Patterns (CSP)
-    csp = CSP(
-        n_components=3,
-        cov_est="concat",
-        cov_method_params=None,
-        log=True,
-        norm_trace=False,
-        reg=None,
-        transform_into='average_power'
-    )
+    for nb_components in range(5, 10):
 
-    # Classifier
-    lda = LinearDiscriminantAnalysis(
-        solver='svd',
-        store_covariance=False,
-        tol=0.0001
-    )
+        print(f"\n\nNumber of components: {nb_components + 1}")
 
-    # Treatment pipeline
-    pipe = Pipeline(
-        steps=[
-            ("CSP", csp),
-            ("LDA", lda)
-        ],
-        memory=None,
-        verbose=False
-    )
+        # Dimensionality reduction algorithm : Common Spatial Patterns (CSP)
+        csp = CSP(
+            n_components=nb_components + 1,
+            cov_est="concat",
+            cov_method_params=None,
+            log=True,
+            norm_trace=False,
+            reg=None,
+            transform_into='average_power'
+        )
 
-    train_scores = []
-    test_scores = []
+        # Classifier
+        lda = LinearDiscriminantAnalysis(
+            solver='svd',
+            store_covariance=False,
+            tol=0.0001
+        )
 
-    for train_idx, test_idx in shuffle_split.split(x):
+        # # Treatment pipeline
+        # pipe = Pipeline(
+        #     steps=[
+        #         ("CSP", csp),
+        #         ("LDA", lda)
+        #     ],
+        #     memory=None,
+        #     verbose=False
+        # )
 
-        # Training
-        x_train, y_train = x[train_idx], y[train_idx]
-        pipe = pipe.fit(x_train, y_train)
-        train_scores.append(pipe.score(x_train, y_train))
-        print(f"Train score: {train_scores[-1]}\n")
+        pipe = make_pipeline(csp, lda)
 
-        # Testing
-        x_test, y_test = x[test_idx], y[test_idx]
-        test_scores.append(pipe.score(x_test, y_test))
-        print(f"Test score: {test_scores[-1]}\n")
+        train_scores = []
+        test_scores = []
 
-    print(f"Mean train score: {np.mean(train_scores)}")
-    print(f"Mean test score: {np.mean(test_scores)}")
+        for train_idx, test_idx in shuffle_split.split(x):
 
-    plt.figure()
-    plt.plot(range(len(train_scores)), train_scores, label="Train score")
-    plt.plot(range(len(test_scores)), test_scores, label="Test score")
-    plt.xlabel("iteration")
-    plt.ylabel("classification accuracy")
-    plt.title("Classification score over time")
-    plt.legend(loc="lower right")
-    plt.show()
+            # Training
+            x_train, y_train = x[train_idx], y[train_idx]
+            pipe = pipe.fit(x_train, y_train)
+            train_scores.append(pipe.score(x_train, y_train))
+            print(f"Train score: {train_scores[-1]}\n")
+
+            # Testing
+            x_test, y_test = x[test_idx], y[test_idx]
+            test_scores.append(pipe.score(x_test, y_test))
+            print(f"Test score: {test_scores[-1]}\n")
+
+        print(f"Mean train score: {np.mean(train_scores)}")
+        print(f"Mean test score: {np.mean(test_scores)}")
+
+        plt.figure()
+        plt.plot(range(len(train_scores)), train_scores, label="Train score")
+        plt.plot(range(len(test_scores)), test_scores, label="Test score")
+        plt.xlabel("iteration")
+        plt.ylabel("classification accuracy")
+        plt.title("Classification score over time")
+        plt.legend(loc="lower right")
+        plt.show()
