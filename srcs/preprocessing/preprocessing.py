@@ -26,7 +26,10 @@ def preprocessing(
     if display_plot:
         # Compute the power spectral density (PSD) of the data
         spectrum: Spectrum = filtered.compute_psd(verbose=True)
-        spectrum.plot(average=True, amplitude=True, dB=True)
+        spectrum.plot(average=True, amplitude=False, dB=True)
+        plt.show()
+
+        spectrum.plot_topomap()
         plt.show()
 
     raw.close()
