@@ -6,13 +6,12 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:09 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/25 10:11:34 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/25 14:17:54 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import mne
 from mne.io import concatenate_raws
-from mne.datasets import eegbci
 from mne.io import BaseRaw
 from mne.channels import DigMontage
 
@@ -43,6 +42,18 @@ def rename_annotations(raw: mne.io.BaseRaw, recording_id: int):
     if recording_id > 2:
         raw.annotations.rename({"T1": t1_legend, "T2": t2_legend})
     return raw
+
+
+def rename_channels(raw: mne.io.BaseRaw):
+    new_names = {}
+    for channel in raw.ch_names:
+        updated_channel = channel.strip(".").upper()
+        if updated_channel.endswith("Z"):
+            updated_channel = updated_channel[:-1] + "z"
+        if updated_channel.startswith("FP"):
+            updated_channel = "Fp" + updated_channel[2:]
+        new_names[channel] = updated_channel
+    raw.rename_channels(new_names)
 
 
 def open_subject_record(
@@ -100,7 +111,10 @@ def open_subject_record(
     raw = concatenate_raws(raw_list, verbose=True, preload=True)  # type: ignore
     raw = rename_annotations(raw, recording_id)
 
-    eegbci.standardize(raw)
+    picks = mne.pick_types(raw.info, eeg=True)
+    raw.pick(picks)
+
+    rename_channels(raw)
 
     montage = mne.channels.make_standard_montage('standard_1020')
     raw.set_montage(montage)

@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:14 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/25 09:56:18 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/25 11:09:59 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ def filter_data(raw: mne.io.BaseRaw):
 
     copy = raw.copy()
 
-    copy.notch_filter(60)
+    copy.notch_filter(60, verbose=False)
     copy.filter(LOW_FREQ, HIGH_FREQ, verbose=False)
 
     return copy
