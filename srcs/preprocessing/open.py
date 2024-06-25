@@ -6,36 +6,38 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:09 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/21 11:56:24 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/25 10:11:34 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import mne
 from mne.io import concatenate_raws
-import matplotlib.pyplot as plt
+from mne.datasets import eegbci
+from mne.io import BaseRaw
+from mne.channels import DigMontage
 
 
-def get_events_legend(recording_id: int):
-    """
-    Get the events legend for T1 and T2 based on recording_id
-    """
-    t0_legend = "T0: rest"
-    t1_legend = t2_legend = ""
-    if recording_id > 2:
-        t1_left_fist = [3, 4, 7, 8, 11, 12]
-        if recording_id in t1_left_fist:
-            t1_legend = "T1: left fist"
-            t2_legend = "T2: right fist"
-        else:
-            t1_legend = "T1: both fists"
-            t2_legend = "T2: both feet"
-    return t0_legend, t1_legend, t2_legend
-
-
-def set_annotation(raw: mne.io.BaseRaw, recording_id: int) -> mne.io.BaseRaw:
+def rename_annotations(raw: mne.io.BaseRaw, recording_id: int):
     """
     Set a more explicit name for the events
     """
+
+    def get_events_legend(recording_id: int):
+        """
+        Get the events legend for T1 and T2 based on recording_id
+        """
+        t0_legend = "T0: rest"
+        t1_legend = t2_legend = ""
+        if recording_id > 2:
+            t1_left_fist = [3, 4, 7, 8, 11, 12]
+            if recording_id in t1_left_fist:
+                t1_legend = "T1: left fist"
+                t2_legend = "T2: right fist"
+            else:
+                t1_legend = "T1: both fists"
+                t2_legend = "T2: both feet"
+        return t0_legend, t1_legend, t2_legend
+
     t0_legend, t1_legend, t2_legend = get_events_legend(recording_id)
     raw.annotations.rename({"T0": t0_legend})
     if recording_id > 2:
@@ -43,7 +45,9 @@ def set_annotation(raw: mne.io.BaseRaw, recording_id: int) -> mne.io.BaseRaw:
     return raw
 
 
-def open_subject_record(subject_id: int = 1, recording_id: int = 1):
+def open_subject_record(
+    subject_id: int = 1, recording_id: int = 1
+) -> tuple[BaseRaw, DigMontage]:
 
     # Load the signal of the EEG recording with the given subject_id and
     # recording_id
@@ -73,10 +77,7 @@ def open_subject_record(subject_id: int = 1, recording_id: int = 1):
     fist_fist = [3, 4, 7, 8, 11, 12]
     fist_foot = [5, 6, 9, 10, 13, 14]
 
-    if recording_id in fist_fist:
-        experiment_runs = fist_fist
-    else:
-        experiment_runs = fist_foot
+    experiment_runs = fist_fist if recording_id in fist_fist else fist_foot
 
     raw_list = []
     for record in experiment_runs:
@@ -96,45 +97,16 @@ def open_subject_record(subject_id: int = 1, recording_id: int = 1):
 
         raw_list.append(raw)
 
-    raw = concatenate_raws(raw_list, verbose=True, preload=True)
+    raw = concatenate_raws(raw_list, verbose=True, preload=True)  # type: ignore
+    raw = rename_annotations(raw, recording_id)
 
-    raw = set_annotation(raw, recording_id)
+    eegbci.standardize(raw)
 
-    # Set montage
-    montage = mne.channels.make_standard_montage("standard_1020")
+    montage = mne.channels.make_standard_montage('standard_1020')
+    raw.set_montage(montage)
+    montage = raw.get_montage()
 
-    montage.plot()  # 2D
-    plt.show()
-    montage.plot(kind="3d", show=True)  # 3D
-    # montage.view_init(azim=70, elev=15)
-    plt.show()
+    if not montage:
+        raise Exception("Error while setting the montage.")
 
-    # Format channel names to match montage
-    new_channel_names = {}
-    original_channel_names = raw.info["ch_names"]
-    for channel in original_channel_names:
-        # print(channel, end=": ")
-        if channel[-1] == '.':
-            if channel[-2] == '.':
-                new_channel_names[channel] = channel[0:-2].upper()
-            else:
-                new_channel_names[channel] = channel[0:-1].upper()
-        if new_channel_names[channel][-1] == 'Z':
-            new_channel_names[channel] = new_channel_names[channel][0:-1] + 'z'
-        if (
-            new_channel_names[channel][0] == 'F' and
-            new_channel_names[channel][1] == 'P'
-        ):
-            channel_end = new_channel_names[channel][-1]
-            new_channel_names[channel] = "Fp" + channel_end
-        # print(new_channel_names[channel])
-
-    raw.rename_channels(
-        new_channel_names
-    )
-
-    raw.set_montage(
-        montage, match_alias=True, match_case=True
-    )
-
-    return raw
+    return raw, montage

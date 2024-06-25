@@ -6,14 +6,14 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:14 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/10 10:19:15 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/25 09:56:18 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 import mne
 
 
-def filter_data(raw: mne.io.BaseRaw, low_freq: float, high_freq: float):
+def filter_data(raw: mne.io.BaseRaw):
     """
     The EEG (electroencephalographic) signals are often noisy and contain
     artifacts (such as eye movements or electrical interference) that can
@@ -24,6 +24,13 @@ def filter_data(raw: mne.io.BaseRaw, low_freq: float, high_freq: float):
     The frequencies in the 1-40 Hz range contain the relevant brain information
     for the analysis, such as the alpha (8-13 Hz) and beta (13-30 Hz) rhythms.
     """
+
+    LOW_FREQ = 8.0
+    HIGH_FREQ = 45.0
+
     copy = raw.copy()
-    copy.filter(low_freq, high_freq, verbose=False)
+
+    copy.notch_filter(60)
+    copy.filter(LOW_FREQ, HIGH_FREQ, verbose=False)
+
     return copy

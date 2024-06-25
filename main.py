@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:26 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/19 14:44:38 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/24 18:19:06 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,6 +28,8 @@ if __name__ == "__main__":
 
         if program_mode == 'train':
             model = train(raw)
+        elif program_mode == 'predict':
+            pass
 
         raw.close()
 
