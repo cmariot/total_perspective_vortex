@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:09 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/25 14:17:54 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/26 11:34:58 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,7 +41,6 @@ def rename_annotations(raw: mne.io.BaseRaw, recording_id: int):
     raw.annotations.rename({"T0": t0_legend})
     if recording_id > 2:
         raw.annotations.rename({"T1": t1_legend, "T2": t2_legend})
-    return raw
 
 
 def rename_channels(raw: mne.io.BaseRaw):
@@ -109,17 +108,15 @@ def open_subject_record(
         raw_list.append(raw)
 
     raw = concatenate_raws(raw_list, verbose=True, preload=True)  # type: ignore
-    raw = rename_annotations(raw, recording_id)
 
     picks = mne.pick_types(raw.info, eeg=True)
     raw.pick(picks)
 
+    rename_annotations(raw, recording_id)
     rename_channels(raw)
 
-    montage = mne.channels.make_standard_montage('standard_1020')
-    raw.set_montage(montage)
+    raw.set_montage(mne.channels.make_standard_montage('standard_1020'))
     montage = raw.get_montage()
-
     if not montage:
         raise Exception("Error while setting the montage.")
 

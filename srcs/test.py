@@ -16,12 +16,12 @@ from preprocessing.open import open_subject_record
 if __name__ == "__main__":
 
     # Tutorial :
-    # https://mne.tools/dev/auto_examples/decoding/decoding_csp_eeg.html
+    # https://mne.tools/stable/auto_examples/decoding/decoding_csp_eeg.html
 
     subject = 3
     runs = [3, 4, 7, 8, 11, 12]
 
-    raw = concatenate_raws([open_subject_record(subject, run) for run in runs])
+    raw = concatenate_raws([open_subject_record(subject, run)[0] for run in runs])
 
     eegbci.standardize(raw)
     montage = make_standard_montage("standard_1005")
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     raw.set_eeg_reference(projection=True)
 
     filtered = raw.filter(
-        8.0, 32.0, fir_design="firwin", skip_by_annotation="edge"
+        8.0, 40.0, fir_design="firwin", skip_by_annotation="edge"
     )
 
     # Compute the power spectral density (PSD) of the data
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     )
     plt.show()
 
-    tmin, tmax = -1.0, 5.0
+    tmin, tmax = 0, 5.0
     picks = pick_types(raw.info, meg=False, eeg=True, stim=False, eog=False, exclude="bads")
 
     epochs = Epochs(
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         preload=True,
     )
 
-    epochs_train = epochs.copy().crop(tmin=1.0, tmax=2.0)
+    epochs_train = epochs.copy()
     labels = epochs.events[:, -1] - 2
 
     # Define a monte-carlo cross-validation generator (reduce variance):
@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
     # Assemble a classifier
     lda = LinearDiscriminantAnalysis()
-    csp = CSP(n_components=4, reg=None, log=True, norm_trace=False)
+    csp = CSP(n_components=5, reg=None, log=True, norm_trace=False)
 
     # Use scikit-learn Pipeline with cross_val_score function
     clf = Pipeline([("CSP", csp), ("LDA", lda)])

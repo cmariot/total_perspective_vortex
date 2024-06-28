@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:14 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/25 11:09:59 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/26 11:38:15 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,12 +25,13 @@ def filter_data(raw: mne.io.BaseRaw):
     for the analysis, such as the alpha (8-13 Hz) and beta (13-30 Hz) rhythms.
     """
 
+    # Band-pass filter to keep only the alpha and beta rhythms
     LOW_FREQ = 8.0
-    HIGH_FREQ = 45.0
+    HIGH_FREQ = 40.0
+    filtered = raw.copy()
+    filtered.filter(LOW_FREQ, HIGH_FREQ, verbose=False)
 
-    copy = raw.copy()
+    # Notch filter to remove the 60 Hz line noise
+    filtered.notch_filter(60, verbose=False)
 
-    copy.notch_filter(60, verbose=False)
-    copy.filter(LOW_FREQ, HIGH_FREQ, verbose=False)
-
-    return copy
+    return filtered

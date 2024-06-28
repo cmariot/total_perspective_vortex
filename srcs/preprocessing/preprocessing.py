@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/25 10:04:28 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/25 15:05:06 by cmariot          ###   ########.fr        #
+#    Updated: 2024/06/28 08:56:57 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,8 +18,6 @@ import matplotlib.pyplot as plt
 from srcs.preprocessing.open import open_subject_record
 from srcs.preprocessing.filter import filter_data
 from srcs.preprocessing.plot import plot
-
-from mne.report import Report
 
 
 def visualize_data(
@@ -58,6 +56,18 @@ def visualize_data(
     plt.show()
 
 
+# def independent_component_analysis(raw: BaseRaw):
+#     from mne.preprocessing import ICA
+#     ica_raw = raw.copy()
+#     n_components = 32
+#     ica = ICA(n_components=n_components, random_state=42, max_iter="auto")
+#     ica.fit(ica_raw)
+#     exclude, scores = ica.find_bads_eog(ica_raw, ch_name='Fpz')
+#     ica.exclude = exclude
+#     ica_raw = ica.apply(ica_raw)
+#     return ica_raw
+
+
 def preprocessing(
     subject_id: int, record_id: int, display_plot: bool
 ) -> BaseRaw:
@@ -74,28 +84,5 @@ def preprocessing(
     # Plots
     if display_plot:
         visualize_data(raw, montage, filtered, spectrum, subject_id, record_id)
-
-    rep = Report()
-    print(rep)
-
-    # Perform ICA test
-    from mne.preprocessing import ICA
-
-    n_components = 5
-    ica = ICA(
-        n_components=n_components,
-        random_state=42,
-        max_iter="auto"
-    ).fit(filtered)
-    ica.exclude = [0]
-    raw_ica = ica.apply(filtered)
-
-    # Original data
-    plot(filtered, subject_id, record_id)
-
-    # ICA data
-    plot(raw_ica, subject_id, record_id, is_filtered=True)
-
-    exit()
 
     return filtered
