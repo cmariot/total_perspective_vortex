@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/24 18:49:24 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/28 11:23:45 by cmariot          ###   ########.fr        #
+#    Updated: 2024/09/27 11:49:07 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -61,7 +61,7 @@ def train(raw: BaseRaw):
     y = epochs.events[:, -1]
 
     # Cross validation
-    NB_ITERATIONS, TEST_PROPORTION = 100, 0.2
+    NB_ITERATIONS, TEST_PROPORTION = 10, 0.2
     shuffle_split = ShuffleSplit(
         NB_ITERATIONS, test_size=TEST_PROPORTION, random_state=42
     )

@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:14 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/26 11:38:15 by cmariot          ###   ########.fr        #
+#    Updated: 2024/09/27 15:11:17 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,7 @@ def filter_data(raw: mne.io.BaseRaw):
 
     # Band-pass filter to keep only the alpha and beta rhythms
     LOW_FREQ = 8.0
-    HIGH_FREQ = 40.0
+    HIGH_FREQ = 30.0
     filtered = raw.copy()
     filtered.filter(LOW_FREQ, HIGH_FREQ, verbose=False)
 

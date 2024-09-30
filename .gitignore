@@ -1,6 +1,10 @@
 # Subject
 en.subject.pdf
 *.pdf
+tests/*
+tests
+*.mp4
+
 
 .vscode
 

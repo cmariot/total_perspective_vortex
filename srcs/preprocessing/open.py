@@ -6,7 +6,7 @@
 #    By: cmariot <cmariot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/06/10 10:19:09 by cmariot           #+#    #+#              #
-#    Updated: 2024/06/26 11:34:58 by cmariot          ###   ########.fr        #
+#    Updated: 2024/09/27 23:18:11 by cmariot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -115,7 +115,8 @@ def open_subject_record(
     rename_annotations(raw, recording_id)
     rename_channels(raw)
 
-    raw.set_montage(mne.channels.make_standard_montage('standard_1020'))
+    raw.drop_channels(['T9', 'T10'])
+    raw.set_montage(mne.channels.make_standard_montage('biosemi64'))
     montage = raw.get_montage()
     if not montage:
         raise Exception("Error while setting the montage.")
